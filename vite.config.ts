@@ -11,6 +11,8 @@ export default defineConfig(({ mode }) => ({
     watch: {
       ignored: [
         "**/.git/**",
+        "**/dist/**",
+        "**/node_modules/**",
         "**/North India/**",
         "**/South India/**",
         "**/East India/**",
