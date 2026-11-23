@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => ({
     port: 8081,
     watch: {
       ignored: [
+        "**/.git/**",
         "**/North India/**",
         "**/South India/**",
         "**/East India/**",
