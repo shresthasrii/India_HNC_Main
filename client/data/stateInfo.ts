@@ -505,6 +505,60 @@ export const STATE_INFO: Record<StateKey, StateInfo> = {
       "Himalayan trekking & snowcapped peaks",
     ],
   },
+  "in-tl": {
+    name: "Telangana",
+    tourismUrl: "https://india-inc-tl.vercel.app/",
+    notes: [
+      "Charminar & Golconda Fort, Hyderabad",
+      "Kakatiya heritage & Ramappa Temple (UNESCO)",
+      "Warangal Fort & rich Deccani culture",
+    ],
+  },
+  "in-tg": {
+    name: "Telangana",
+    tourismUrl: "https://india-inc-tl.vercel.app/",
+    notes: [
+      "Charminar & Golconda Fort, Hyderabad",
+      "Kakatiya heritage & Ramappa Temple (UNESCO)",
+      "Warangal Fort & rich Deccani culture",
+    ],
+  },
+  "telangana": {
+    name: "Telangana",
+    tourismUrl: "https://india-inc-tl.vercel.app/",
+    notes: [
+      "Charminar & Golconda Fort, Hyderabad",
+      "Kakatiya heritage & Ramappa Temple (UNESCO)",
+      "Warangal Fort & rich Deccani culture",
+    ],
+  },
+  "telengana": {
+    name: "Telangana",
+    tourismUrl: "https://india-inc-tl.vercel.app/",
+    notes: [
+      "Charminar & Golconda Fort, Hyderabad",
+      "Kakatiya heritage & Ramappa Temple (UNESCO)",
+      "Warangal Fort & rich Deccani culture",
+    ],
+  },
+  "in-telangana": {
+    name: "Telangana",
+    tourismUrl: "https://india-inc-tl.vercel.app/",
+    notes: [
+      "Charminar & Golconda Fort, Hyderabad",
+      "Kakatiya heritage & Ramappa Temple (UNESCO)",
+      "Warangal Fort & rich Deccani culture",
+    ],
+  },
+  "in-telengana": {
+    name: "Telangana",
+    tourismUrl: "https://india-inc-tl.vercel.app/",
+    notes: [
+      "Charminar & Golconda Fort, Hyderabad",
+      "Kakatiya heritage & Ramappa Temple (UNESCO)",
+      "Warangal Fort & rich Deccani culture",
+    ],
+  },
   "in-jh": {
     name: "Jharkhand",
     tourismUrl: "https://india-inc-jk.vercel.app/",

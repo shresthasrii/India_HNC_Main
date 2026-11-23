@@ -143,6 +143,16 @@ export default function StateInfoPanel({
     shape.key === "in-himachal-pradesh" ||
     (shape.name || "").toLowerCase().includes("himachal");
 
+  const isTG =
+    shape.key === "in-tl" ||
+    shape.key === "in-tg" ||
+    shape.key === "telangana" ||
+    shape.key === "telengana" ||
+    shape.key === "in-telangana" ||
+    shape.key === "in-telengana" ||
+    (shape.name || "").toLowerCase().includes("telan") ||
+    (shape.name || "").toLowerCase().includes("telen");
+
   const url = isJK
     ? "https://india-inc-jnk-l.vercel.app/"
     : isUT
@@ -177,6 +187,8 @@ export default function StateInfoPanel({
     ? "https://haryana-beta.vercel.app/"
     : isHP
     ? "https://india-inc-hp.vercel.app/"
+    : isTG
+    ? "https://india-inc-tl.vercel.app/"
     : info.tourismUrl ||
       `https://www.google.com/search?q=${encodeURIComponent(info.name + " tourism heritage")}`;
 
