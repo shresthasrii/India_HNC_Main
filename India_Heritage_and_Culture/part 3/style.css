@@ -1,0 +1,83 @@
+/* ==========================================================================
+   INDIA HERITAGE & CULTURE - PART 3 (INTERACTIVE SVG MAP & TOURISM DEEP LINKS)
+   ========================================================================== */
+
+@import url("../part 2/style.css");
+
+/* Map Section Header */
+.map-header {
+  margin-top: 2rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.map-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.03em;
+}
+
+.map-desc {
+  margin-top: 0.5rem;
+  max-width: 650px;
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+/* Map SVG Card Wrapper */
+.map-card-wrapper {
+  position: relative;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--border-color);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  max-width: 1100px;
+  margin: 0 auto 3.5rem;
+}
+
+.india-svg-map {
+  width: 100%;
+  height: auto;
+  display: block;
+  user-select: none;
+}
+
+/* Interactive State Shapes */
+.state-shape {
+  cursor: pointer;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+  outline: none;
+}
+
+.state-shape:hover {
+  opacity: 0.88;
+}
+
+.state-shape path {
+  stroke: #0B5CAB;
+  stroke-width: 1;
+}
+
+/* Active Highlighted State */
+.state-zoom-overlay {
+  pointer-events: none;
+  transition: transform 0.25s ease;
+}
+
+/* Watermark */
+.map-watermark {
+  font-size: 11px;
+  fill: #A8A29E;
+  text-anchor: end;
+}

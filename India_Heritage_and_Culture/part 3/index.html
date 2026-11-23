@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>India Heritage and Culture - Part 3 (Interactive Map)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Ambient National Tricolor Background -->
+  <div class="bg-ambient">
+    <div class="glow-saffron"></div>
+    <div class="glow-green"></div>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="#" class="brand-logo">
+        <svg class="spin-chakra" width="22" height="22" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="#0B5CAB" stroke-width="4"/>
+          <circle cx="50" cy="50" r="8" fill="#0B5CAB"/>
+          <g stroke="#0B5CAB" stroke-width="2.5">
+            <line x1="50" y1="50" x2="50" y2="4" /><line x1="50" y1="50" x2="50" y2="96" />
+            <line x1="50" y1="50" x2="4" y2="50" /><line x1="50" y1="50" x2="96" y2="50" />
+            <line x1="50" y1="50" x2="17.5" y2="17.5" /><line x1="50" y1="50" x2="82.5" y2="82.5" />
+          </g>
+        </svg>
+        <span>Bharat</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#map">Map</a>
+        <a href="#about">About</a>
+        <a href="https://incredibleindia.org/" target="_blank" rel="noopener" class="btn-cta">Incredible India</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Part 2 Feature: Bharat SamayPatra Centered Hero Section -->
+  <section class="hero-wrapper" id="home">
+    <div class="starfield" id="starfield"></div>
+
+    <div class="hero-content">
+      <div class="hero-header">
+        <svg class="spin-chakra" width="40" height="40" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="#0B5CAB" stroke-width="4"/>
+          <circle cx="50" cy="50" r="8" fill="#0B5CAB"/>
+          <g stroke="#0B5CAB" stroke-width="2.5">
+            <line x1="50" y1="50" x2="50" y2="4" /><line x1="50" y1="50" x2="50" y2="96" />
+            <line x1="50" y1="50" x2="4" y2="50" /><line x1="50" y1="50" x2="96" y2="50" />
+          </g>
+        </svg>
+        <h1>Bharat SamayPatra</h1>
+        <svg class="spin-chakra" width="40" height="40" viewBox="0 0 100 100" style="transform: rotate(180deg);">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="#0B5CAB" stroke-width="4"/>
+          <circle cx="50" cy="50" r="8" fill="#0B5CAB"/>
+          <g stroke="#0B5CAB" stroke-width="2.5">
+            <line x1="50" y1="50" x2="50" y2="4" /><line x1="50" y1="50" x2="50" y2="96" />
+            <line x1="50" y1="50" x2="4" y2="50" /><line x1="50" y1="50" x2="96" y2="50" />
+          </g>
+        </svg>
+      </div>
+
+      <!-- Live Telemetry Digital Clock -->
+      <div class="clock-container">
+        <div>
+          <div class="clock-digits" id="clock-time">--:--:-- --</div>
+          <div class="clock-date" id="clock-date">Indian Standard Time</div>
+        </div>
+      </div>
+
+      <p class="hero-subtitle">
+        Explore the incredible diversity and living heritage of Bharat
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Content Shell -->
+  <main class="container">
+    <!-- Map Section Header -->
+    <section class="map-header" id="map">
+      <div>
+        <div class="map-title">
+          <svg class="spin-chakra" width="30" height="30" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="46" fill="none" stroke="#0B5CAB" stroke-width="4"/>
+            <circle cx="50" cy="50" r="8" fill="#0B5CAB"/>
+            <g stroke="#0B5CAB" stroke-width="2.5">
+              <line x1="50" y1="50" x2="50" y2="4" /><line x1="50" y1="50" x2="50" y2="96" />
+              <line x1="50" y1="50" x2="4" y2="50" /><line x1="50" y1="50" x2="96" y2="50" />
+            </g>
+          </svg>
+          <h2>Bharat Explorer Map</h2>
+        </div>
+        <p class="map-desc">
+          Hover over any state to discover regional heritage highlights. Click to launch
+          the official state tourism portal for travel guides, history, and culture.
+        </p>
+      </div>
+
+      <div class="banner-badges">
+        <div class="badge-item">
+          <span class="badge-dot saffron"></span>
+          <span>Tiranga palette</span>
+        </div>
+        <div class="badge-item">
+          <span class="badge-dot green"></span>
+          <span>Official portals</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Part 3 Feature: Interactive Vector SVG Map -->
+    <div class="map-card-wrapper">
+      <svg
+        id="india-map-svg"
+        class="india-svg-map"
+        viewBox="0 0 960 720"
+        role="img"
+        aria-label="Interactive Map of India"
+      >
+        <defs>
+          <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+            <feOffset dx="0" dy="1" result="offsetblur" />
+            <feComponentTransfer>
+              <feFuncA type="linear" slope="0.35" />
+            </feComponentTransfer>
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- Base States Layer -->
+        <g id="map-states-layer"></g>
+
+        <!-- Dynamic Hover Overlay Layer (Leader line, Zoom highlight, Info Card) -->
+        <g id="map-overlay-layer"></g>
+
+        <text x="948" y="708" class="map-watermark">
+          © Cultural map for educational use
+        </text>
+      </svg>
+    </div>
+
+    <!-- Knowledge Cards Grid -->
+    <section class="cards-grid" id="about">
+      <article class="knowledge-card">
+        <h3 class="card-title">History of India</h3>
+        <p class="card-desc">
+          From the Indus Valley civilisation and Vedic age to the Mauryan, Gupta, Chola, Delhi Sultanate,
+          and Mughal empires, India’s history spans millennia of ideas, trade, science, and arts, culminating in a vibrant modern republic.
+        </p>
+        <a class="card-link" href="https://en.wikipedia.org/wiki/History_of_India" target="_blank" rel="noopener">Read more →</a>
+      </article>
+
+      <article class="knowledge-card">
+        <h3 class="card-title">Heritage of India</h3>
+        <p class="card-desc">
+          India is home to diverse UNESCO World Heritage Sites—from Ajanta–Ellora and Hampi to Jaipur,
+          the Western Ghats, and Sundarbans—reflecting architecture, nature, crafts, and living traditions preserved across regions.
+        </p>
+        <a class="card-link" href="https://whc.unesco.org/en/statesparties/in" target="_blank" rel="noopener">Explore sites →</a>
+      </article>
+
+      <article class="knowledge-card">
+        <h3 class="card-title">Cultural Data & Diversity</h3>
+        <p class="card-desc">
+          22 scheduled languages, hundreds of dialects, classical arts like Bharatanatyam, Kathak, and Odissi,
+          and festivals from Navratri to Onam reflect India’s pluralism and shared heritage evolving through centuries.
+        </p>
+        <a class="card-link" href="https://incredibleindia.org/" target="_blank" rel="noopener">Incredible India →</a>
+      </article>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>© 2026 Bharat Heritage Explorer (Part 3 - Interactive Map)</div>
+      <div class="footer-links">
+        <a href="https://code.highcharts.com/mapdata/countries/in/in-all.geo.json" target="_blank" rel="noopener">Map data source</a>
+        <a href="https://www.mygov.in/states/" target="_blank" rel="noopener">State portals</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="map-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+/* ==========================================================================
+   INDIA HERITAGE & CULTURE - PART 2 (HERO SECTION & LIVE TELEMETRY CLOCK)
+   ========================================================================== */
+
+@import url("../initial/style.css");
+
+/* Centered Hero Section */
+.hero-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24rem;
+  padding: 4rem 1rem 3rem;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Twinkling Starfield */
+.starfield {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background-color: #0B5CAB;
+  opacity: 0.3;
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.2);
+  }
+}
+
+/* Hero Content */
+.hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.hero-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.hero-header h1 {
+  font-size: 3.25rem;
+  font-weight: 900;
+  color: var(--primary);
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  margin-top: 1.25rem;
+  font-weight: 500;
+}
+
+/* Digital Clock Container */
+.clock-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1rem 2rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(11, 92, 171, 0.18);
+  box-shadow: 0 10px 25px -5px rgba(11, 92, 171, 0.12), 0 8px 10px -6px rgba(11, 92, 171, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  margin: 0 auto;
+  animation: scaleUp 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.clock-digits {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: 0.08em;
+}
+
+.clock-colon {
+  animation: pulseColon 1s infinite;
+  display: inline-block;
+  color: var(--flag-saffron);
+}
+
+.clock-ampm {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--flag-green);
+  margin-left: 0.25rem;
+}
+
+.clock-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.5rem;
+}
+
+@keyframes pulseColon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-header h1 {
+    font-size: 2.25rem;
+  }
+  .clock-digits {
+    font-size: 1.6rem;
+  }
+}

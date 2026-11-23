@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <clipPath id="circle-clip">
+      <circle cx="256" cy="256" r="256" />
+    </clipPath>
+  </defs>
+  <g clip-path="url(#circle-clip)">
+    <!-- Saffron / Orange Top -->
+    <rect width="512" height="170.67" fill="#FF9933"/>
+    <!-- White Middle -->
+    <rect y="170.67" width="512" height="170.67" fill="#FFFFFF"/>
+    <!-- Green Bottom -->
+    <rect y="341.34" width="512" height="170.67" fill="#138808"/>
+    
+    <!-- Ashoka Chakra -->
+    <g transform="translate(256, 256)">
+      <!-- Outer Ring -->
+      <circle r="60" fill="none" stroke="#000080" stroke-width="8"/>
+      <!-- Inner Hub -->
+      <circle r="14" fill="#000080"/>
+      <!-- 24 Spokes -->
+      <g stroke="#000080" stroke-width="3.5" stroke-linecap="round">
+        <line x1="0" y1="-60" x2="0" y2="60"/>
+        <line x1="-60" y1="0" x2="60" y2="0"/>
+        <line x1="-42.43" y1="-42.43" x2="42.43" y2="42.43"/>
+        <line x1="-42.43" y1="42.43" x2="42.43" y2="-42.43"/>
+        <line x1="-55.43" y1="-22.96" x2="55.43" y2="22.96"/>
+        <line x1="-55.43" y1="22.96" x2="55.43" y2="-22.96"/>
+        <line x1="-22.96" y1="-55.43" x2="22.96" y2="55.43"/>
+        <line x1="-22.96" y1="55.43" x2="22.96" y2="-55.43"/>
+        <line x1="-58.98" y1="-11.03" x2="58.98" y2="11.03"/>
+        <line x1="-58.98" y1="11.03" x2="58.98" y2="-11.03"/>
+        <line x1="-11.03" y1="-58.98" x2="11.03" y2="58.98"/>
+        <line x1="-11.03" y1="58.98" x2="11.03" y2="-58.98"/>
+      </g>
+    </g>
+  </g>
+</svg>
