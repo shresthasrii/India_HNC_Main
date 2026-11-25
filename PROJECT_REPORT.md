@@ -1,168 +1,281 @@
-# Technical Project Report: India Heritage & Culture Portal (`India_HNC_Main`)
+# Project Report: India Heritage and Culture Portal (`India_HNC_Main`)
 
 ---
 
-## Document Control & Metadata
+## Table of Contents
 
-| Field | Detail |
+- [Document Control and Metadata](#document-control-and-metadata)
+- [1. Executive Summary and Abstract](#1-executive-summary-and-abstract)
+- [2. Problem Statement and Project Objectives](#2-problem-statement-and-project-objectives)
+  - [2.1 Problem Statement](#21-problem-statement)
+  - [2.2 Core Objectives](#22-core-objectives)
+- [3. System Architecture and Technology Stack](#3-system-architecture-and-technology-stack)
+  - [3.1 Architecture Overview](#31-architecture-overview)
+  - [3.2 Complete Technology Stack and Dependencies](#32-complete-technology-stack-and-dependencies)
+  - [3.3 Repository Directory Structure](#33-repository-directory-structure)
+- [4. Component and UI Architecture](#4-component-and-ui-architecture)
+  - [4.1 Application Shell and Routing](#41-application-shell-and-routing)
+  - [4.2 Visual Components and Telemetry](#42-visual-components-and-telemetry)
+  - [4.3 Backend Express Server Architecture](#43-backend-express-server-architecture)
+  - [4.4 Standalone HTML5 Prototypes](#44-standalone-html5-prototypes)
+- [5. Data Dictionary and Object Model Specifications](#5-data-dictionary-and-object-model-specifications)
+  - [5.1 StateInfo Object](#51-stateinfo-object)
+  - [5.2 MapShape Object](#52-mapshape-object)
+  - [5.3 GeoJSON Feature Hierarchy Objects](#53-geojson-feature-hierarchy-objects)
+  - [5.4 TimelineItem and KnowledgeCard Objects](#54-timelineitem-and-knowledgecard-objects)
+  - [5.5 Shared API Response Object](#55-shared-api-response-object)
+- [6. Exhaustive State and Regional Object Catalog](#6-exhaustive-state-and-regional-object-catalog)
+  - [6.1 Summary Matrix of Configured Deployments](#61-summary-matrix-of-configured-deployments)
+  - [6.2 Detailed Object Specifications for Vercel-Wired States](#62-detailed-object-specifications-for-vercel-wired-states)
+  - [6.3 Additional Pre-Configured Regions and Fallback Object](#63-additional-pre-configured-regions-and-fallback-object)
+- [7. Interactive Map Engine and Routing Mechanics](#7-interactive-map-engine-and-routing-mechanics)
+  - [7.1 GeoJSON Loading and Coordinate Projection](#71-geojson-loading-and-coordinate-projection)
+  - [7.2 Vertex Centroid Calculation and Territory Overlays](#72-vertex-centroid-calculation-and-territory-overlays)
+  - [7.3 Tricolor Palette Hashing](#73-tricolor-palette-hashing)
+  - [7.4 Dual-Action Routing and Hover Overlay](#74-dual-action-routing-and-hover-overlay)
+- [8. Engineering Challenges and Solutions](#8-engineering-challenges-and-solutions)
+- [9. DevOps, Build Pipelines, and Deployment](#9-devops-build-pipelines-and-deployment)
+  - [9.1 Build Scripts and Local Development](#91-build-scripts-and-local-development)
+  - [9.2 Vercel Cloud Deployment Configuration](#92-vercel-cloud-deployment-configuration)
+  - [9.3 Developer Guide for Adding New States](#93-developer-guide-for-adding-new-states)
+- [10. Verification and Operational Status](#10-verification-and-operational-status)
+- [11. Conclusion and Future Scope](#11-conclusion-and-future-scope)
+
+---
+
+## Document Control and Metadata
+
+| Attribute | Value |
 |---|---|
-| **Project Title** | India Heritage & Culture Portal (*Bharat SamayPatra*) |
-| **System Identifier** | `India_HNC_Main` / `india-heritage-and-culture` |
-| **Repository URL** | [https://github.com/shresthasrii/India_HNC_Main.git](https://github.com/shresthasrii/India_HNC_Main.git) |
+| **Project Title** | India Heritage and Culture Portal (*Bharat SamayPatra*) |
+| **Package Identifier** | `india-heritage-and-culture` (`private: true`, `type: "module"`) |
+| **Repository URL** | [https://github.com/shresthasrii/India_HNC_Main.git](https://github.com/shresthasrii/India_HNC_Main.git) (Branch: `main`) |
 | **Production URL** | [https://india-heritage-and-culture.vercel.app/](https://india-heritage-and-culture.vercel.app/) |
-| **Local Development** | `http://localhost:8081/` |
-| **Target Framework** | React 18, Vite 7 (SPA), Express 5 API, Tailwind CSS, Radix UI |
-| **Specification Version** | 1.0.0 (Production Release) |
+| **Local Workspace** | `C:\Users\sriis\Documents\Final\INDIA_INC` |
+| **Local Dev Endpoint** | `http://localhost:8081/` (Express API at `/api/ping`, `/api/demo`) |
+| **Primary Stack** | React 18.3.1, TypeScript 5.9.2, Vite 7.1.2, Express 5.1.0, Tailwind CSS 3.4.17 |
+| **GeoJSON Source** | Highcharts India Disputed Map (`in-all-disputed.geo.json`) |
 
 ---
 
-## 1. Executive Summary & Abstract
+## 1. Executive Summary and Abstract
 
-The **India Heritage & Culture Portal** (*Bharat SamayPatra*) is an interactive, unified digital gateway dedicated to showcasing and navigating the cultural, architectural, and historical diversity of India. The platform integrates a high-fidelity vector SVG map engine, an Indian Standard Time (IST) astronomical clock header, interactive historical milestone timelines, and curated heritage knowledge cards.
+The **India Heritage and Culture Portal** (*Bharat SamayPatra*) is a full-stack React + TypeScript Single Page Application (SPA) backed by an Express 5 API layer. It serves as the central interactive directory for exploring India's geographic states, Union Territories, historical milestones, and regional cultural deployments.
 
-The primary objective of the portal is to serve as the centralized nexus for state-level heritage applications. Through a dual-action spatial interaction model, users can explore state-level UNESCO monuments, classical arts, and festivals, and seamlessly transition into dedicated, deep-dive web applications deployed across independent cloud architectures.
+At the heart of the application is a custom vector SVG map engine (`IndiaMap`) that dynamically fetches GeoJSON boundary coordinates, projects polygons onto a `960x720` SVG viewport, shades regions using an Indian tricolor-inspired hash palette, and elevates individual states on hover with an animated info panel (`StateInfoPanel`). Users can navigate to dedicated state web portals either by clicking a state boundary directly (`StateShape`) or by clicking the anchored hover details card (`StateInfoPanel`).
 
 ```mermaid
 flowchart TD
-    A["User Navigation / Browser"] --> B["Bharat SamayPatra Landing Portal<br/>(india-heritage-and-culture.vercel.app)"]
-    B --> C["IST Header & Astronomical Clock"]
-    B --> D["Interactive SVG Vector Map<br/>(GeoJSON Engine)"]
-    B --> E["Historical Milestones Timeline"]
-    B --> F["Curated Knowledge Cards"]
-    
-    D -->|Hover State| G["StateInfoPanel Card<br/>(Cultural Highlights & Popout)"]
-    D -->|Click State Boundary| H["Direct External Redirection"]
-    G -->|Click Tourism Link| H
-    
-    H --> S1["Jammu & Kashmir Portal"]
-    H --> S2["Uttarakhand Portal"]
-    H --> S3["Uttar Pradesh Portal"]
-    H --> S4["Kerala Portal"]
-    H --> S5["Tamil Nadu Portal"]
-    H --> S18["... 18 Connected State Portals"]
+    User["User Browser"] --> Portal["Bharat Landing Portal<br/>(india-heritage-and-culture.vercel.app)"]
+    Portal --> Hero["CenteredHero<br/>(Bharat SamayPatra + IST DigitalClock)"]
+    Portal --> Map["IndiaMap SVG Engine<br/>(960x720 ViewBox + GeoJSON)"]
+    Portal --> Timeline["Timeline Carousel<br/>(10 Historical Milestones)"]
+    Portal --> Cards["KnowledgeCards<br/>(History, UNESCO Heritage, Incredible India)"]
+
+    Map -->|Hover or Focus| Panel["StateInfoPanel<br/>(1.12x Zoom + Dashed Leader Line + 3 Notes)"]
+    Map -->|Click SVG Polygon| Target["Dedicated State Deployment<br/>(18 Vercel Portals + Regional Fallbacks)"]
+    Panel -->|Click Website CTA| Target
 ```
 
 ---
 
-## 2. Problem Statement & Objectives
+## 2. Problem Statement and Project Objectives
 
-### 2.1 The Problem
-India's heritage comprises thousands of years of living traditions, 22 official languages, hundreds of classical and folk art forms, and 40+ UNESCO World Heritage Sites. Digital resources representing this wealth are traditionally fragmented across disconnected government tourism portals, unstructured databases, and disparate regional websites. Users lack a single, modern, visually immersive entry point that provides both macro-level spatial exploration and micro-level regional immersion.
+### 2.1 Problem Statement
+Digital documentation of India's culture—spanning 22 scheduled languages, diverse classical dance forms, regional festivals, and UNESCO World Heritage Sites—is distributed across disconnected state portals and standalone regional micro-apps. Without a unified spatial interface, visitors cannot smoothly discover highlights across states or navigate directly from a national overview to state-specific web applications.
 
 ### 2.2 Core Objectives
-1. **Interactive Spatial Exploration**: Provide an accurate, responsive vector map of India with real-time hover elevation, responsive centroid calculation, and Indian tricolor thematic visualization.
-2. **Unified Routing Hub**: Connect the central portal to dedicated state-level web applications via multi-key normalization (`hc-key`, ISO 3166-2 prefixed codes, raw keys, and normalized name fallbacks).
-3. **Dual-Action Engagement**: Enable immediate exploration via either a direct map polygon click or through an anchored detail card popout.
-4. **Resilient Production Architecture**: Deploy an optimized client-side Single Page Application (SPA) on Vercel with zero routing collisions and predictable build pipelines.
+1. **Interactive Spatial Exploration**: Render India's states and Union Territories in an accessible, responsive SVG map featuring hover elevation (`1.12x` centroid-anchored scaling) and deterministic tricolor styling.
+2. **Multi-Key State Resolution**: Standardize lookup logic across inconsistent GeoJSON identifiers (`hc-key`, ISO-style `in-xx` codes, full state names, and legacy spellings such as `"orissa"`, `"kerela"`, or `"telengana"`).
+3. **Dual-Action Navigation Hub**: Wire **18 deployed Vercel state portals** (plus **8 regional/reference entries** and a dynamic search fallback) into both map polygons (`StateShape`) and anchored side panels (`StateInfoPanel`).
+4. **Historical and Educational Context**: Complement spatial navigation with a 10-event historical milestone carousel (`Timeline`) and 3 curated educational knowledge cards (`KnowledgeCards`).
+5. **Production-Ready Cloud Hosting**: Provide reproducible local execution (`vite` on port `8081`), Express production serving (`dist/server` + `dist/spa`), and clean SPA routing on Vercel (`vercel.json`).
 
 ---
 
-## 3. System Architecture & Tech Stack
+## 3. System Architecture and Technology Stack
 
-### 3.1 Technology Stack
+### 3.1 Architecture Overview
+The project follows a decoupled client-server repository layout compiled via Vite:
+- **Client SPA (`client/`)**: Compiled by `vite build` into `dist/spa/` (consumed directly by Vercel in production or by Express in self-hosted Node deployments).
+- **Server (`server/`)**: Express 5 application (`createServer()` in [server/index.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/server/index.ts)) integrated into Vite dev mode via a custom `expressPlugin()` in [vite.config.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/vite.config.ts), and compiled separately via [vite.config.server.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/vite.config.server.ts) to `dist/server/`.
+- **Shared (`shared/`)**: Cross-environment TypeScript API contracts (`DemoResponse` in [shared/api.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/shared/api.ts)).
+- **Standalone Prototypes (`India_Heritage_and_Culture/`)**: Vanilla HTML/CSS/JS preview stages (`initial/`, `part 2/`, `part 3/`, `final/`) kept synchronized with the React state URL catalog.
 
-```
-Frontend:
-  ├── Core Framework: React 18.3.1 (TypeScript 5.6.3)
-  ├── Build Tool & Bundler: Vite 7.1.2 (@vitejs/plugin-react-swc)
-  ├── Styling & Design System: Tailwind CSS 3.4.14, Tailwind Typography
-  ├── Component Primitives: Radix UI (@radix-ui/react-*)
-  ├── Icons: Lucide React, Custom SVG Chakra Components
-  ├── Animation: CSS Keyframes (twinkle, spin, fade-in)
-  └── Routing: Wouter 3.3.5 / Client-side SPA
+### 3.2 Complete Technology Stack and Dependencies
+Verified directly from [package.json](file:///C:/Users/sriis/Documents/Final/INDIA_INC/package.json):
 
-Backend & Serverless Layer:
-  ├── Runtime: Node.js (v18+)
-  ├── API Server: Express 5.1.0
-  ├── Schema Validation: Zod 3.25.76
-  └── Build Server: Vite Server Config (Rollup ES format)
+| Category | Packages & Exact Declared Versions |
+|---|---|
+| **Runtime & Package Manager** | Node.js ES Modules (`"type": "module"`), `pnpm@10.14.0`, `tsx` (`^4.20.3`) |
+| **Core UI Framework** | `react` (`^18.3.1`), `react-dom` (`^18.3.1`), `typescript` (`^5.9.2`) |
+| **Build & Compiler** | `vite` (`^7.1.2`), `@vitejs/plugin-react-swc` (`^4.0.0`), `@swc/core` (`^1.13.3`) |
+| **Client Routing & State** | `react-router-dom` (`^6.30.1`), `@tanstack/react-query` (`^5.84.2`) |
+| **Styling & Design System** | `tailwindcss` (`^3.4.17`), `@tailwindcss/typography` (`^0.5.16`), `tailwindcss-animate` (`^1.0.7`), `postcss` (`^8.5.6`), `autoprefixer` (`^10.4.21`), `class-variance-authority` (`^0.7.1`), `clsx` (`^2.1.1`), `tailwind-merge` (`^2.6.0`), `next-themes` (`^0.4.6`) |
+| **UI Component Primitives** | 26 `@radix-ui/react-*` packages (Accordion, AlertDialog, AspectRatio, Avatar, Checkbox, Collapsible, ContextMenu, Dialog, DropdownMenu, HoverCard, Label, Menubar, NavigationMenu, Popover, Progress, RadioGroup, ScrollArea, Select, Separator, Slider, Slot, Switch, Tabs, Toast, Toggle, ToggleGroup, Tooltip), `cmdk` (`^1.1.1`), `vaul` (`^1.1.2`), `sonner` (`^1.7.4`), `input-otp` (`^1.4.2`), `react-resizable-panels` (`^3.0.4`), `react-day-picker` (`^9.8.1`), `date-fns` (`^4.1.0`) |
+| **Carousel, Motion & Graphics** | `embla-carousel-react` (`^8.6.0`), `framer-motion` (`^12.23.12`), `lucide-react` (`^0.539.0`), `recharts` (`^2.12.7`), `three` (`^0.176.0`), `@react-three/fiber` (`^8.18.0`), `@react-three/drei` (`^9.122.0`) |
+| **Backend API & Validation** | `express` (`^5.1.0`), `cors` (`^2.8.5`), `dotenv` (`^17.2.1`), `zod` (`^3.25.76`), `serverless-http` (`^3.2.0`), `react-hook-form` (`^7.62.0`), `@hookform/resolvers` (`^5.2.1`) |
+| **Testing & Code Quality** | `vitest` (`^3.2.4`), `prettier` (`^3.6.2`) |
 
-Hosting & Infrastructure:
-  ├── Source Control: GitHub (shresthasrii/India_HNC_Main)
-  ├── Production Hosting: Vercel Cloud Platform (Global CDN Edge)
-  └── Routing Strategy: vercel.json SPA rewrites (/(.*) -> /index.html)
-```
-
-### 3.2 Directory Structure
-```
+### 3.3 Repository Directory Structure
+```text
 INDIA_INC/
 ├── client/
 │   ├── components/
-│   │   ├── icons/ChakraIcon.tsx         # Ashoka Chakra spinning icon
-│   │   ├── layout/Header.tsx, Footer.tsx# Global layout headers
+│   │   ├── home/
+│   │   │   └── KnowledgeCards.tsx        # 3-card educational grid
+│   │   ├── icons/
+│   │   │   └── ChakraIcon.tsx            # 24-spoke SVG Ashoka Chakra icon
+│   │   ├── layout/
+│   │   │   ├── Header.tsx                # Sticky header (Home, About, Incredible India)
+│   │   │   └── Footer.tsx                # Footer with GeoJSON & MyGov references
 │   │   ├── map/
-│   │   │   ├── StateShape.tsx           # SVG Path rendering & click routing
-│   │   │   └── StateInfoPanel.tsx       # Anchored detail card & hover zoom
-│   │   ├── timeline/TimelineCard.tsx    # Carousel timeline card
-│   │   ├── AnalogClock.tsx, DigitalClock.tsx
-│   │   ├── CenteredHero.tsx             # Bharat SamayPatra hero with starfield
-│   │   ├── IndiaMap.tsx                 # Core SVG map orchestrator
-│   │   └── Timeline.tsx                 # Horizontal milestone carousel
+│   │   │   ├── StateShape.tsx            # Individual clickable SVG state path + URL resolver
+│   │   │   └── StateInfoPanel.tsx        # 1.12x zoomed overlay + leader line + 260x140 card
+│   │   ├── timeline/
+│   │   │   └── TimelineCard.tsx          # Linked milestone slide card
+│   │   ├── ui/                           # Reusable Radix/Tailwind UI components
+│   │   ├── AnalogClock.tsx               # 60x60 SVG IST clock component
+│   │   ├── CenteredHero.css              # Hero twinkle & animation styles
+│   │   ├── CenteredHero.tsx              # "Bharat SamayPatra" hero + starfield + clock
+│   │   ├── DigitalClock.tsx              # Live Asia/Kolkata HH:MM:SS clock
+│   │   ├── IndiaBackground.tsx           # Fixed tricolor ambient glows + paisley + chakras
+│   │   ├── IndiaMap.tsx                  # Core SVG map container & GeoJSON projector
+│   │   └── Timeline.tsx                  # Embla auto-playing historical carousel
 │   ├── data/
-│   │   ├── knowledgeCards.ts            # Educational article models
-│   │   ├── stateInfo.ts                 # Master registry of 18 state objects
-│   │   └── timelineEvents.ts            # Historical events dataset
-│   ├── hooks/useGeoJSON.ts, use-mobile.tsx, use-toast.ts
-│   ├── lib/mapUtils.ts, utils.ts, assets.ts
-│   ├── pages/Index.tsx, About.tsx, NotFound.tsx
-│   ├── types/map.ts, timeline.ts
-│   ├── App.tsx
-│   └── global.css
+│   │   ├── knowledgeCards.ts             # KNOWLEDGE_CARDS array (3 cards)
+│   │   ├── stateInfo.ts                  # STATE_INFO dictionary (62 keys) + fallback helper
+│   │   └── timelineEvents.ts             # TIMELINE_EVENTS array (10 milestones)
+│   ├── hooks/
+│   │   ├── useGeoJSON.ts                 # Async GeoJSON fetch hook with mount guard
+│   │   ├── use-mobile.tsx
+│   │   └── use-toast.ts
+│   ├── lib/
+│   │   ├── assets.ts                     # Builder CDN URLs for timeline imagery
+│   │   ├── mapUtils.ts                   # FLAG_COLORS, colorForKey, normalizeKey, computeBounds, centroidOfFeature
+│   │   ├── utils.ts
+│   │   └── utils.spec.ts
+│   ├── pages/
+│   │   ├── Index.tsx                     # Main landing page composing Hero, Map, Timeline, Cards
+│   │   ├── About.tsx                     # "/about" informational page
+│   │   └── NotFound.tsx                  # Catch-all 404 route logger & redirect
+│   ├── types/
+│   │   ├── map.ts                        # Position, Feature*, StateKey, StateInfo, MapShape, IndiaMapProps
+│   │   └── timeline.ts                   # TimelineItem interface
+│   ├── App.tsx                           # BrowserRouter, QueryClientProvider, Toaster, Routes
+│   └── global.css                        # Inter font import + Tailwind CSS HSL theme tokens
 ├── public/
-│   ├── in-all-disputed.geo.json         # Highcharts vector map dataset
-│   ├── flag.svg, placeholder.svg
-│   └── robots.txt
+│   ├── in-all-disputed.geo.json          # Local GeoJSON copy
+│   ├── flag.svg, favicon.ico, placeholder.svg, robots.txt
 ├── server/
-│   ├── index.ts                         # Express app factory & middleware
-│   ├── node-build.ts                    # Production server entry
-│   └── routes/demo.ts
-├── India_Heritage_and_Culture/          # Standalone prototype backups
-│   ├── final/ (index.html, map-data.js, script.js, style.css)
-│   └── part 3/ (index.html, map-data.js, script.js, style.css)
-├── package.json, pnpm-lock.yaml
-├── tsconfig.json, vite.config.ts, vite.config.server.ts
-├── vercel.json                          # Vercel SPA routing configuration
-└── .gitignore
+│   ├── routes/
+│   │   └── demo.ts                       # GET /api/demo handler returning DemoResponse
+│   ├── index.ts                          # createServer() Express factory (/api/ping, /api/demo)
+│   └── node-build.ts                     # Production Express static SPA server (port 3000 default)
+├── shared/
+│   └── api.ts                            # Shared DemoResponse type
+├── India_Heritage_and_Culture/           # Standalone progressive HTML/CSS/JS builds
+│   ├── initial/, part 2/, part 3/, final/, run_preview.bat
+├── .builder/, index.html, package.json, pnpm-lock.yaml, tsconfig.json
+├── vite.config.ts, vite.config.server.ts, tailwind.config.ts, components.json
+├── vercel.json, netlify.toml, run.bat, run.ps1, .gitignore
+└── PROJECT_REPORT.md
 ```
 
 ---
 
-## 4. Data Models & Object Specifications
+## 4. Component and UI Architecture
 
-The system is strictly typed with TypeScript interfaces to govern map features, state metadata, and interactive cards.
+### 4.1 Application Shell and Routing
+In [client/App.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/App.tsx), the root component wraps the interface in `QueryClientProvider`, `TooltipProvider`, `Toaster`, `Sonner`, and `BrowserRouter`. It mounts persistent background, navigation, and footer layers around three routes:
+- `/` &rarr; `Index` ([client/pages/Index.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/pages/Index.tsx))
+- `/about` &rarr; `About` ([client/pages/About.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/pages/About.tsx))
+- `*` &rarr; `NotFound` ([client/pages/NotFound.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/pages/NotFound.tsx))
 
-### 4.1 State Information Object (`StateInfo`)
-Defined in [client/types/map.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/types/map.ts#L33-L37):
+### 4.2 Visual Components and Telemetry
+- **`IndiaBackground` ([client/components/IndiaBackground.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/IndiaBackground.tsx))**: Renders a fixed backdrop (`-z-10`) featuring soft saffron (`rgba(255,103,31,0.18)`) and green (`rgba(19,136,8,0.18)`) radial gradients, an SVG `<pattern id="paisley">` (`160x160`), and four 24-spoke `Chakra` motifs.
+- **`CenteredHero` ([client/components/CenteredHero.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/CenteredHero.tsx))**: Displays 50 procedurally positioned twinkling star elements, two rotating `ChakraIcon` emblems (`size={40}`), the title `"Bharat SamayPatra"`, and a live `DigitalClock`.
+- **`DigitalClock` ([client/components/DigitalClock.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/DigitalClock.tsx))**: Polls every `1000ms` and formats Indian Standard Time via `toLocaleString("en-US", { timeZone: "Asia/Kolkata" })` into `HH:MM:SS` (`IST`).
+- **`AnalogClock` ([client/components/AnalogClock.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/AnalogClock.tsx))**: Available `60x60` SVG timepiece calculating `UTC+5:30` hand angles (`#0B5CAB` hour, `#1A9B0A` minute, `#FF671F` second).
+- **`Timeline` ([client/components/Timeline.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/Timeline.tsx))**: Uses `embla-carousel-react` (`loop: true`, `align: "center"`, `inViewThreshold: 0.6`) with `requestAnimationFrame`-driven auto-play every `3500ms`, hover pause, previous/next buttons, and keyboard `ArrowLeft`/`ArrowRight` navigation across 10 milestones in [timelineEvents.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/data/timelineEvents.ts):
+  1. `c. 2600–1900 BCE` — Indus Valley Civilisation
+  2. `c. 250 BCE` — Ashoka & Mauryan Edicts
+  3. `c. 1600–1707` — Height of Mughal Empire
+  4. `1857` — First War of Independence
+  5. `1919` — Jallianwala Bagh
+  6. `1930` — Dandi March
+  7. `15 Aug 1947` — Independence of India
+  8. `26 Jan 1950` — Republic of India
+  9. `1971` — Bangladesh Liberation
+  10. `2014` — Mars Orbiter Mission
+- **`KnowledgeCards` ([client/components/home/KnowledgeCards.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/home/KnowledgeCards.tsx))**: Renders 3 external educational resource cards from [knowledgeCards.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/data/knowledgeCards.ts): *History of India* (Wikipedia), *Heritage of India* (UNESCO World Heritage Centre), and *Cultural Data & Diversity* (Incredible India).
+
+### 4.3 Backend Express Server Architecture
+- **`createServer` ([server/index.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/server/index.ts))**: Configures `cors()`, `express.json()`, and `express.urlencoded({ extended: true })`, exposing:
+  - `GET /api/ping` &rarr; returns `{ message: process.env.PING_MESSAGE ?? "ping" }` (`"ping pong"` in `.env`)
+  - `GET /api/demo` &rarr; delegates to `handleDemo` ([server/routes/demo.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/server/routes/demo.ts)) returning `{ message: "Hello from Express server" }`
+- **Production Entry ([server/node-build.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/server/node-build.ts))**: Serves static assets from `path.join(__dirname, "../spa")` (`dist/spa`), returns JSON 404 for unknown `/api/*` or `/health` routes, falls back to `dist/spa/index.html` for all SPA routes, and handles `SIGTERM`/`SIGINT` graceful shutdown.
+
+### 4.4 Standalone HTML5 Prototypes
+The directory `India_Heritage_and_Culture/` houses progressive standalone builds (`initial/`, `part 2/`, `part 3/`, `final/`) launchable via `run_preview.bat`. The `final/` and `part 3/` stages contain pre-projected SVG paths and a synchronized `STATE_INFO` table inside `map-data.js` wired with the same 18 Vercel URLs as the React client.
+
+---
+
+## 5. Data Dictionary and Object Model Specifications
+
+Every data structure powering the map, UI widgets, and API responses is strongly typed under `client/types/` and `shared/`.
+
+### 5.1 StateInfo Object
+Defined in [client/types/map.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/types/map.ts#L31-L37) and stored in `STATE_INFO: Record<StateKey, StateInfo>` inside [client/data/stateInfo.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/data/stateInfo.ts):
+
 ```typescript
+export type StateKey = string;
+
 export interface StateInfo {
-  name: string;        // Official display name of the State or UT
-  tourismUrl: string;  // Direct URL to the live deployment or official portal
-  notes: string[];     // Array of 3 key cultural and heritage highlights
+  name: string;        // Official state/UT display title rendered in ARIA labels and StateInfoPanel
+  tourismUrl: string;  // Target portal URL opened in a new tab (_blank, noopener noreferrer)
+  notes: string[];     // Array of 3 heritage bullet strings displayed on hover
 }
 ```
 
-### 4.2 Map Shape Object (`MapShape`)
-Generated dynamically from the projected GeoJSON features:
+### 5.2 MapShape Object
+Defined in [client/types/map.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/types/map.ts#L39-L50) and generated inside `IndiaMap`:
+
 ```typescript
 export interface MapShape {
-  key: string;                          // Normalized identification key (e.g., 'in-mh')
-  name: string;                         // Name retrieved from GeoJSON properties
-  d: string;                            // SVG SVGPathData command string (M... L... Z)
-  centroid: { x: number; y: number };   // Calculated geometric center for tooltip anchor
-  isCircle?: boolean;                   // Marker flag for small island territories
+  key: string;                        // Normalized lowercase key (hc-key or "in-<slug>")
+  name: string;                       // Feature name or uppercase key fallback
+  d: string;                          // Projected SVG path commands ("M... L... Z")
+  centroid: { x: number; y: number }; // Projected viewport coordinates for zoom & leader-line anchor
+  isCircle?: boolean;                 // True for circular disputed-territory overlays (PoK, Aksai Chin)
+}
+
+export interface IndiaMapProps {
+  width?: number;   // Default: 960 SVG user units
+  height?: number;  // Default: 720 SVG user units
 }
 ```
 
-### 4.3 GeoJSON Feature Hierarchy
+### 5.3 GeoJSON Feature Hierarchy Objects
+Defined in [client/types/map.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/types/map.ts#L1-L29):
+
 ```typescript
-export interface FeatureProperties {
-  name?: string;
-  "hc-key"?: string;
+export interface Position {
+  0: number; // Longitude
+  1: number; // Latitude
 }
+
+export type PolygonCoords = Position[];
+export type MultiPolygonCoords = (PolygonCoords | PolygonCoords[])[];
 
 export interface FeatureGeometry {
   type: "Polygon" | "MultiPolygon";
   coordinates: any;
+}
+
+export interface FeatureProperties {
+  name?: string;
+  "hc-key"?: string;
 }
 
 export interface Feature {
@@ -178,35 +291,72 @@ export interface FeatureCollection {
 }
 ```
 
-### 4.4 Knowledge Card & Timeline Objects
+### 5.4 TimelineItem and KnowledgeCard Objects
+Defined in [client/types/timeline.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/types/timeline.ts) and [client/data/knowledgeCards.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/data/knowledgeCards.ts):
+
 ```typescript
-export interface KnowledgeCard {
-  title: string;
-  description: string;
-  linkText: string;
-  linkUrl: string;
+export interface TimelineItem {
+  date: string;   // Era or historical date label (e.g., "15 Aug 1947")
+  title: string;  // Milestone heading
+  image: string;  // Asset URL from ASSETS
+  href?: string;  // External Wikipedia reference link
+  alt: string;    // Image accessibility description
 }
 
-export interface TimelineItem {
-  date: string;
-  title: string;
-  image: string;
-  href?: string;
-  alt: string;
+export interface KnowledgeCard {
+  title: string;       // Card heading
+  description: string; // Summary paragraph
+  linkText: string;    // CTA label with arrow
+  linkUrl: string;     // External educational URL
+}
+```
+
+### 5.5 Shared API Response Object
+Defined in [shared/api.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/shared/api.ts):
+
+```typescript
+export interface DemoResponse {
+  message: string;
 }
 ```
 
 ---
 
-## 5. Exhaustive State Object Directory (18 Configured Deployments)
+## 6. Exhaustive State and Regional Object Catalog
 
-The following directory contains the full data objects for all 18 states currently wired to live external portals:
+Currently, [client/data/stateInfo.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/data/stateInfo.ts) defines **62 key mappings** representing **26 distinct geographic entities** (18 states/UTs wired directly to dedicated Vercel deployments in both `StateShape.tsx` and `StateInfoPanel.tsx`, plus 8 additional regions pointing to official tourism/reference links), supplemented by a dynamic fallback function `getStateFallbackInfo`.
 
-### 1. Jammu & Kashmir
+### 6.1 Summary Matrix of Configured Deployments
+
+| # | State / UT | Primary Key | Live Vercel Redirection URL | Wired in Map Components |
+|---|---|---|---|---|
+| 1 | **Jammu & Kashmir** | `in-jk` | [https://india-inc-jnk-l.vercel.app/](https://india-inc-jnk-l.vercel.app/) | `isJK` (`StateShape`, `StateInfoPanel`) |
+| 2 | **Uttarakhand** | `in-ut` | [https://india-inc-ut.vercel.app/](https://india-inc-ut.vercel.app/) | `isUT` (`StateShape`, `StateInfoPanel`) |
+| 3 | **Jharkhand** | `in-jh` | [https://india-inc-jk.vercel.app/](https://india-inc-jk.vercel.app/) | `isJH` (`StateShape`, `StateInfoPanel`) |
+| 4 | **Karnataka** | `in-ka` | [https://india-inc-kt.vercel.app/](https://india-inc-kt.vercel.app/) | `isKA` (`StateShape`, `StateInfoPanel`) |
+| 5 | **Uttar Pradesh** | `in-up` | [https://india-inc-up.vercel.app/](https://india-inc-up.vercel.app/) | `isUP` (`StateShape`, `StateInfoPanel`) |
+| 6 | **Kerala** | `in-kl` | [https://india-inc-kr.vercel.app/](https://india-inc-kr.vercel.app/) | `isKL` (`StateShape`, `StateInfoPanel`) |
+| 7 | **Tamil Nadu** | `in-tn` | [https://india-inc-tn.vercel.app/#top](https://india-inc-tn.vercel.app/#top) | `isTN` (`StateShape`, `StateInfoPanel`) |
+| 8 | **Bihar** | `in-br` | [https://india-inc-bihar.vercel.app/](https://india-inc-bihar.vercel.app/) | `isBR` (`StateShape`, `StateInfoPanel`) |
+| 9 | **Odisha** | `in-od` | [https://india-inc-od.vercel.app/](https://india-inc-od.vercel.app/) | `isOD` (`StateShape`, `StateInfoPanel`) |
+| 10 | **Delhi** | `in-dl` | [https://new-delhi.vercel.app/](https://new-delhi.vercel.app/) | `isDL` (`StateShape`, `StateInfoPanel`) |
+| 11 | **Chhattisgarh** | `in-cg` | [https://chhattisgarh.vercel.app/](https://chhattisgarh.vercel.app/) | `isCG` (`StateShape`, `StateInfoPanel`) |
+| 12 | **Maharashtra** | `in-mh` | [https://maharashtra-five.vercel.app/](https://maharashtra-five.vercel.app/) | `isMH` (`StateShape`, `StateInfoPanel`) |
+| 13 | **Madhya Pradesh** | `in-mp` | [https://madhya-pradesh-pi.vercel.app/](https://madhya-pradesh-pi.vercel.app/) | `isMP` (`StateShape`, `StateInfoPanel`) |
+| 14 | **Rajasthan** | `in-rj` | [https://rajasthan-psi.vercel.app/](https://rajasthan-psi.vercel.app/) | `isRJ` (`StateShape`, `StateInfoPanel`) |
+| 15 | **Punjab** | `in-pb` | [https://punjab-livid.vercel.app/](https://punjab-livid.vercel.app/) | `isPB` (`StateShape`, `StateInfoPanel`) |
+| 16 | **Haryana** | `in-hr` | [https://haryana-beta.vercel.app/](https://haryana-beta.vercel.app/) | `isHR` (`StateShape`, `StateInfoPanel`) |
+| 17 | **Himachal Pradesh** | `in-hp` | [https://india-inc-hp.vercel.app/](https://india-inc-hp.vercel.app/) | `isHP` (`StateShape`, `StateInfoPanel`) |
+| 18 | **Telangana** | `in-tl` | [https://india-inc-tl.vercel.app/](https://india-inc-tl.vercel.app/) | `isTG` (`StateShape`, `StateInfoPanel`) |
+
+### 6.2 Detailed Object Specifications for Vercel-Wired States
+Below are the exact `StateInfo` records from [client/data/stateInfo.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/data/stateInfo.ts) alongside the exact matching keys/substrings evaluated in [StateShape.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/map/StateShape.tsx) and [StateInfoPanel.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/map/StateInfoPanel.tsx):
+
+#### 1. Jammu & Kashmir (`isJK`)
 ```json
 {
-  "key": "in-jk",
-  "aliases": ["in-jk", "jammu & kashmir", "jammu and kashmir", "in-jammu-and-kashmir"],
+  "stateInfoKeys": ["in-jk", "jammu and kashmir", "in-jammu-and-kashmir"],
+  "componentNameSubstrings": ["jammu"],
   "name": "Jammu & Kashmir",
   "tourismUrl": "https://india-inc-jnk-l.vercel.app/",
   "notes": [
@@ -217,11 +367,11 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 2. Uttarakhand
+#### 2. Uttarakhand (`isUT`)
 ```json
 {
-  "key": "in-ut",
-  "aliases": ["in-ut", "uttarakhand", "in-uttarakhand"],
+  "stateInfoKeys": ["in-ut", "in-uk", "uttarakhand", "in-uttarakhand"],
+  "componentNameSubstrings": ["uttarakhand", "uttaranchal"],
   "name": "Uttarakhand",
   "tourismUrl": "https://india-inc-ut.vercel.app/",
   "notes": [
@@ -232,11 +382,11 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 3. Jharkhand
+#### 3. Jharkhand (`isJH`)
 ```json
 {
-  "key": "in-jh",
-  "aliases": ["in-jh", "jharkhand", "in-jharkhand"],
+  "stateInfoKeys": ["in-jh", "jharkhand", "in-jharkhand"],
+  "componentNameSubstrings": ["jharkhand"],
   "name": "Jharkhand",
   "tourismUrl": "https://india-inc-jk.vercel.app/",
   "notes": [
@@ -247,11 +397,12 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 4. Karnataka
+#### 4. Karnataka (`isKA`)
 ```json
 {
-  "key": "in-ka",
-  "aliases": ["in-ka", "karnataka", "in-karnataka"],
+  "stateInfoKeys": ["in-ka", "karnataka", "in-karnataka"],
+  "componentExtraKeys": ["in-kt"],
+  "componentNameSubstrings": ["karnataka"],
   "name": "Karnataka",
   "tourismUrl": "https://india-inc-kt.vercel.app/",
   "notes": [
@@ -262,11 +413,11 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 5. Uttar Pradesh
+#### 5. Uttar Pradesh (`isUP`)
 ```json
 {
-  "key": "in-up",
-  "aliases": ["in-up", "uttar pradesh", "in-uttar-pradesh"],
+  "stateInfoKeys": ["in-up", "in-uttar-pradesh", "uttar pradesh"],
+  "componentNameSubstrings": ["uttar pradesh"],
   "name": "Uttar Pradesh",
   "tourismUrl": "https://india-inc-up.vercel.app/",
   "notes": [
@@ -277,11 +428,12 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 6. Kerala
+#### 6. Kerala (`isKL`)
 ```json
 {
-  "key": "in-kl",
-  "aliases": ["in-kl", "kerala", "in-kerala"],
+  "stateInfoKeys": ["in-kl", "kerala", "in-kerala"],
+  "componentExtraKeys": ["in-kr"],
+  "componentNameSubstrings": ["kerala", "kerela"],
   "name": "Kerala",
   "tourismUrl": "https://india-inc-kr.vercel.app/",
   "notes": [
@@ -292,11 +444,11 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 7. Tamil Nadu
+#### 7. Tamil Nadu (`isTN`)
 ```json
 {
-  "key": "in-tn",
-  "aliases": ["in-tn", "tamil nadu", "in-tamil-nadu"],
+  "stateInfoKeys": ["in-tn", "tamil nadu", "in-tamil-nadu"],
+  "componentNameSubstrings": ["tamil"],
   "name": "Tamil Nadu",
   "tourismUrl": "https://india-inc-tn.vercel.app/#top",
   "notes": [
@@ -307,11 +459,11 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 8. Bihar
+#### 8. Bihar (`isBR`)
 ```json
 {
-  "key": "in-br",
-  "aliases": ["in-br", "bihar", "in-bihar"],
+  "stateInfoKeys": ["in-br", "bihar", "in-bihar"],
+  "componentNameSubstrings": ["bihar"],
   "name": "Bihar",
   "tourismUrl": "https://india-inc-bihar.vercel.app/",
   "notes": [
@@ -322,11 +474,12 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 9. Odisha
+#### 9. Odisha (`isOD`)
 ```json
 {
-  "key": "in-od",
-  "aliases": ["in-od", "odisha", "in-odisha", "orissa", "in-orissa"],
+  "stateInfoKeys": ["in-od", "odisha", "in-odisha"],
+  "componentExtraKeys": ["orissa", "in-orissa"],
+  "componentNameSubstrings": ["odisha", "orissa"],
   "name": "Odisha",
   "tourismUrl": "https://india-inc-od.vercel.app/",
   "notes": [
@@ -337,11 +490,12 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 10. Delhi
+#### 10. Delhi (`isDL`)
 ```json
 {
-  "key": "in-dl",
-  "aliases": ["in-dl", "delhi", "in-delhi", "nct of delhi", "in-nct-of-delhi", "new delhi", "in-new-delhi"],
+  "stateInfoKeys": ["in-dl", "delhi", "in-delhi", "nct of delhi", "in-nct-of-delhi"],
+  "componentExtraKeys": ["new delhi", "in-new-delhi"],
+  "componentNameSubstrings": ["delhi"],
   "name": "Delhi",
   "tourismUrl": "https://new-delhi.vercel.app/",
   "notes": [
@@ -352,11 +506,11 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 11. Chhattisgarh
+#### 11. Chhattisgarh (`isCG`)
 ```json
 {
-  "key": "in-cg",
-  "aliases": ["in-cg", "in-ct", "chhattisgarh", "in-chhattisgarh"],
+  "stateInfoKeys": ["in-cg", "in-ct", "chhattisgarh", "in-chhattisgarh"],
+  "componentNameSubstrings": ["chhattisgarh"],
   "name": "Chhattisgarh",
   "tourismUrl": "https://chhattisgarh.vercel.app/",
   "notes": [
@@ -367,56 +521,56 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 12. Maharashtra
+#### 12. Maharashtra (`isMH`)
 ```json
 {
-  "key": "in-mh",
-  "aliases": ["in-mh", "maharashtra", "in-maharashtra"],
+  "stateInfoKeys": ["in-mh", "maharashtra", "in-maharashtra"],
+  "componentNameSubstrings": ["maharashtra"],
   "name": "Maharashtra",
   "tourismUrl": "https://maharashtra-five.vercel.app/",
   "notes": [
-    "Ajanta & Ellora caves (UNESCO)",
-    "Chhatrapati Shivaji's hill forts",
-    "Lavani folk dance & Ganesh festival"
+    "Ajanta & Ellora Caves (UNESCO)",
+    "Maratha forts of Shivaji Maharaj",
+    "Ganesh Chaturthi celebrations"
   ]
 }
 ```
 
-### 13. Madhya Pradesh
+#### 13. Madhya Pradesh (`isMP`)
 ```json
 {
-  "key": "in-mp",
-  "aliases": ["in-mp", "madhya pradesh", "in-madhya-pradesh"],
+  "stateInfoKeys": ["in-mp", "madhya pradesh", "in-madhya-pradesh"],
+  "componentNameSubstrings": ["madhya"],
   "name": "Madhya Pradesh",
   "tourismUrl": "https://madhya-pradesh-pi.vercel.app/",
   "notes": [
     "Khajuraho temples (UNESCO)",
     "Sanchi Stupa & Buddhist monuments",
-    "Tiger reserves of Kanha & Bandhavgarh"
+    "Kanha & Bandhavgarh tiger reserves"
   ]
 }
 ```
 
-### 14. Rajasthan
+#### 14. Rajasthan (`isRJ`)
 ```json
 {
-  "key": "in-rj",
-  "aliases": ["in-rj", "rajasthan", "in-rajasthan"],
+  "stateInfoKeys": ["in-rj", "rajasthan", "in-rajasthan"],
+  "componentNameSubstrings": ["rajasthan"],
   "name": "Rajasthan",
   "tourismUrl": "https://rajasthan-psi.vercel.app/",
   "notes": [
-    "Hill Forts & palaces of Jaipur, Udaipur",
-    "Thar Desert & camel safaris",
-    "Ghoomar dance & vibrant folk music"
+    "Pink City Jaipur & Hawa Mahal",
+    "Thar desert forts and havelis",
+    "Royal Rajputana culture"
   ]
 }
 ```
 
-### 15. Punjab
+#### 15. Punjab (`isPB`)
 ```json
 {
-  "key": "in-pb",
-  "aliases": ["in-pb", "punjab", "in-punjab"],
+  "stateInfoKeys": ["in-pb", "punjab", "in-punjab"],
+  "componentNameSubstrings": ["punjab"],
   "name": "Punjab",
   "tourismUrl": "https://punjab-livid.vercel.app/",
   "notes": [
@@ -427,11 +581,11 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 16. Haryana
+#### 16. Haryana (`isHR`)
 ```json
 {
-  "key": "in-hr",
-  "aliases": ["in-hr", "haryana", "in-haryana"],
+  "stateInfoKeys": ["in-hr", "haryana", "in-haryana"],
+  "componentNameSubstrings": ["haryana"],
   "name": "Haryana",
   "tourismUrl": "https://haryana-beta.vercel.app/",
   "notes": [
@@ -442,11 +596,11 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 17. Himachal Pradesh
+#### 17. Himachal Pradesh (`isHP`)
 ```json
 {
-  "key": "in-hp",
-  "aliases": ["in-hp", "hp", "himachal pradesh", "in-himachal-pradesh"],
+  "stateInfoKeys": ["in-hp", "hp", "himachal pradesh", "in-himachal-pradesh"],
+  "componentNameSubstrings": ["himachal"],
   "name": "Himachal Pradesh",
   "tourismUrl": "https://india-inc-hp.vercel.app/",
   "notes": [
@@ -457,11 +611,11 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
-### 18. Telangana
+#### 18. Telangana (`isTG`)
 ```json
 {
-  "key": "in-tl",
-  "aliases": ["in-tl", "in-tg", "telangana", "telengana", "in-telangana", "in-telengana"],
+  "stateInfoKeys": ["in-tl", "in-tg", "telangana", "telengana", "in-telangana", "in-telengana"],
+  "componentNameSubstrings": ["telan", "telen"],
   "name": "Telangana",
   "tourismUrl": "https://india-inc-tl.vercel.app/",
   "notes": [
@@ -472,83 +626,105 @@ The following directory contains the full data objects for all 18 states current
 }
 ```
 
----
+### 6.3 Additional Pre-Configured Regions and Fallback Object
+Eight additional regions exist in [client/data/stateInfo.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/data/stateInfo.ts) using official tourism or informational URLs:
 
-## 6. Interactive Map Engine & Routing Mechanics
-
-### 6.1 Vector GeoJSON Normalization
-The map data is retrieved from `public/in-all-disputed.geo.json`. In [client/lib/mapUtils.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/lib/mapUtils.ts), latitude/longitude coordinates are converted into 2D SVG canvas bounds using mercator bounding calculations:
-```typescript
-export function computeBounds(features: Feature[]) {
-  let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
-  // Bounding coordinate scanning across all MultiPolygons
-  return { minLon, maxLon, minLat, maxLat };
-}
-```
-
-### 6.2 Centroid and Label Placement
-Centroids are pre-calculated for each state boundary to anchor the hover zoom effect (`transformOrigin: centroid`) and accurately position the `StateInfoPanel` tooltip:
-$$\bar{x} = \frac{1}{6A} \sum_{i=0}^{n-1} (x_i + x_{i+1})(x_i y_{i+1} - x_{i+1} y_i)$$
-$$\bar{y} = \frac{1}{6A} \sum_{i=0}^{n-1} (y_i + y_{i+1})(x_i y_{i+1} - x_{i+1} y_i)$$
-
-### 6.3 Tricolor Palette Generator
-Each polygon is styled with an Indian flag-inspired color hash function (`colorForKey`):
-- Saffron: `#FF671F`
-- White / Ash Silver: `#FFFFFF` / `#E6EDE6`
-- Green: `#138808`
-- Navy Chakra accent on hover: `#0B5CAB`
-
----
-
-## 7. Key Engineering Challenges & Solutions
-
-### Challenge 1: Vercel 404 NOT_FOUND on Deployment
-- **Symptom**: Navigating to `https://india-heritage-and-culture.vercel.app/` returned a Vercel 404 code `NOT_FOUND`.
-- **Root Cause**: Vite's production build config was set to `outDir: "dist/spa"`. Vercel's default Vite framework detector looked for `dist/index.html`. Since `dist/` only contained child directories (`spa/` and `server/`), Vercel failed to locate the static entry point.
-- **Resolution**: Created [vercel.json](file:///C:/Users/sriis/Documents/Final/INDIA_INC/vercel.json) specifying:
-  ```json
-  {
-    "buildCommand": "npm run build:client",
-    "outputDirectory": "dist/spa",
-    "cleanUrls": true,
-    "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-  }
-  ```
-
-### Challenge 2: Background Dev Server Exit on Git Actions
-- **Symptom**: Vite exited with `ELIFECYCLE Command failed with exit code 1` whenever `git add` or `git commit` occurred.
-- **Root Cause**: Vite's file watcher monitored the root directory. Git operations altered `.git/index` and `.git/objects`, triggering Vite's hot-reload watcher. In headless background execution environments without interactive TTY, Vite's restart procedure crashed.
-- **Resolution**: Updated `watch.ignored` in [vite.config.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/vite.config.ts) to explicitly ignore `**/.git/**`, `**/dist/**`, and `**/node_modules/**`, and set `CI=true`.
-
-### Challenge 3: Multi-Account Git Credential Collisions
-- **Symptom**: `git push` hung indefinitely on Windows.
-- **Root Cause**: Windows Credential Manager contained multiple GitHub accounts (`shresthasrii` and `tewarisudipti-git`). When Git pushed to `https://github.com/shresthasrii/...`, Git Credential Manager halted to display an interactive UI account-selection prompt.
-- **Resolution**: Formatted the remote URL with an explicit user authority: `https://shresthasrii@github.com/shresthasrii/India_HNC_Main.git`. This allowed GCM to automatically bind the correct credentials.
-
-### Challenge 4: Monorepo vs. Core Portal Isolation
-- **Symptom**: Subdirectories (`North India/`, `South India/`, `East India/`) contained independent Node projects with their own `.git` folders and heavy `node_modules`.
-- **Root Cause**: Directly staging the folder would create broken subproject gitlinks without `.gitmodules` and exceed GitHub file limits.
-- **Resolution**: Configured `.gitignore` to isolate `North India/`, `South India/`, and `East India/`, ensuring `India_HNC_Main` remains lightweight, clean, and immediately buildable on cloud CDNs.
-
----
-
-## 8. Verification & Operational Health Check
-
-| Test Item | Command | Expected Output | Actual Status |
+| Key | Name | Tourism / Reference URL | Notes |
 |---|---|---|---|
-| **TypeScript Compilation** | `pnpm typecheck` | Exit code 0 | **PASSED** (0 errors) |
-| **Client SPA Build** | `pnpm run build:client` | Built into `dist/spa` in < 4s | **PASSED** (3.37s) |
-| **Git Working Tree** | `git status` | `Your branch is up to date with 'origin/main'` | **PASSED** (Clean) |
-| **Local API Health** | `Invoke-RestMethod http://localhost:8081/api/ping` | `{"message": "ping pong"}` | **PASSED** (200 OK) |
-| **Remote Repository** | `git ls-remote origin` | `refs/heads/main` tracked | **PASSED** (Synchronized) |
+| `in-gj` | **Gujarat** | `https://www.gujarattourism.com/` | Rann of Kutch & White Desert; Somnath & Dwarka temples; Garba & Navratri festivities |
+| `in-wb` | **West Bengal** | `https://wbtourism.gov.in/` | Durga Puja of Kolkata; Santiniketan & Tagore; Sundarbans mangroves |
+| `in-as` | **Assam** | `https://www.tourism.assam.gov.in/` | Kaziranga & one-horned rhinos; Majuli river island culture; Assam tea estates |
+| `in-ml` | **Meghalaya** | `https://www.meghalayatourism.in/` | Living root bridges; Mawphlang sacred groves; Monsoon cloudscapes |
+| `in-ga` | **Goa** | `https://www.goa-tourism.com/` | Indo-Portuguese heritage; Festivals & fado music; Beaches & spice plantations |
+| `in-tn-pondicherry` | **Puducherry** | `https://tourism.py.gov.in/` | French quarter architecture; Auroville & ashram culture; Seaside promenades |
+| `in-pok` | **Pakistan-occupied Kashmir (PoK)** | `https://en.wikipedia.org/wiki/Pakistan_occupied_Kashmir` | Himalayan valleys and cultural heritage; Historic Silk Route influences; Complex modern history |
+| `in-aksai-chin` | **Aksai Chin** | `https://en.wikipedia.org/wiki/Aksai_Chin` | High-altitude Karakoram plateau; Sparse trans-Himalayan culture; Historic trade pathways |
+
+Any remaining GeoJSON region without a `STATE_INFO` key or boolean override resolves via `getStateFallbackInfo(key, name)` to a Google search link (`https://www.google.com/search?q=<name>+tourism+heritage`) with 3 generic cultural highlights.
 
 ---
 
-## 9. Conclusion & Future Roadmap
+## 7. Interactive Map Engine and Routing Mechanics
 
-The **India Heritage & Culture Portal (`India_HNC_Main`)** has reached a stable production release. It unites 18 distinct regional applications under an interactive vector SVG map engine, supported by a scalable TypeScript schema and an automated Vercel deployment pipeline.
+### 7.1 GeoJSON Loading and Coordinate Projection
+Inside [client/components/IndiaMap.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/IndiaMap.tsx):
+1. `useGeoJSON` fetches `"https://code.highcharts.com/mapdata/countries/in/custom/in-all-disputed.geo.json"`.
+2. `computeBounds(features)` scans every `Polygon` and `MultiPolygon` ring to establish geographic extrema `{ minLon, maxLon, minLat, maxLat }`.
+3. On a `960x720` canvas (`width = 960`, `height = 720`), margins reserve `padTop = 20`, `padLeft = 20`, `padBottom = 20`, and `padRight = 284` (`PANEL_W = 260 + 24`) so hover cards never occlude mainland polygons.
+4. Uniform scale factor preserves aspect ratio, mapping each `(lon, lat)` vertex linearly via:
+   - `x = offsetX + (lon - minLon) * scale`
+   - `y = offsetY + (maxLat - lat) * scale`
 
-### Recommended Next Steps:
-1. **Complete Remaining States**: Add the remaining 10 states and 8 Union Territories using the documented 3-step blueprint.
-2. **Dynamic CMS Integration**: Transition `stateInfo.ts` into a lightweight headless CMS or database (such as Supabase or Cloudflare D1) for real-time content updates without requiring code rebuilds.
-3. **PWA Offline Support**: Add a Service Worker to cache the GeoJSON boundary data and milestone carousel for offline educational use in remote schools and cultural exhibitions.
+### 7.2 Vertex Centroid Calculation and Territory Overlays
+In [client/lib/mapUtils.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/lib/mapUtils.ts#L58-L78), `centroidOfFeature` walks all numeric `[lon, lat]` pairs in `feature.geometry.coordinates` and computes the arithmetic mean (`sumLon / Math.max(1, count)`, `sumLat / Math.max(1, count)`). Two circular SVG arc overlays (`isCircle: true`, `strokeDasharray="4 3"`) are appended at `(lon: 74.3, lat: 34.7, radiusDeg: 1.1)` for `in-pok` and `(lon: 79.2, lat: 35.1, radiusDeg: 1.0)` for `in-aksai-chin`.
+
+### 7.3 Tricolor Palette Hashing
+Regions are colored deterministically via `colorForKey(key)` using `hash = (hash * 31 + key.charCodeAt(i)) >>> 0` modulo the 9-swatch `FLAG_COLORS` palette:
+`["#FF671F", "#FF8F4A", "#FFB07A", "#F2F2F2", "#DDE6DD", "#1A9B0A", "#138808", "#0B5CAB", "#4C86C6"]`.
+
+### 7.4 Dual-Action Routing and Hover Overlay
+- **`StateShape.tsx`**: Wraps each SVG `<g role="link" tabIndex={0}>` path in an `<a href={url} target="_blank" rel="noopener noreferrer">` element and emits `onHover(shape.key)` on `onMouseEnter`/`onFocus` and `onHover(null)` on `onMouseLeave`/`onBlur`.
+- **`StateInfoPanel.tsx`**: Renders above all map polygons whenever `hoverKey` matches an active shape. It draws:
+  1. A duplicated `<path>` scaled `1.12x` around `(shape.centroid.x, shape.centroid.y)` with `#0B5CAB` border (`strokeWidth={2.2}`) and `<filter id="dropShadow">`.
+  2. An animated dashed leader line (`strokeDasharray="3 3"`) and anchor dot (`r={3}`) connecting the state centroid to a `260x140` white card positioned on the right panel column (`panelX = mapWidth - 260 - 12`).
+  3. Up to 3 cultural highlights plus `"Click to open website →"` wrapped in its own `<a href={url} target="_blank" rel="noopener noreferrer">` clickable container.
+
+---
+
+## 8. Engineering Challenges and Solutions
+
+| # | Issue Encountered | Root Cause Analysis | Implemented Resolution |
+|---|---|---|---|
+| 1 | **Vercel `404 NOT_FOUND` on Root URL** | Vite compiled the client SPA into `dist/spa`, while Vercel's default Vite preset searched root `dist/` for `index.html`. | Added [vercel.json](file:///C:/Users/sriis/Documents/Final/INDIA_INC/vercel.json) defining `buildCommand: "npm run build:client"`, `outputDirectory: "dist/spa"`, `cleanUrls: true`, and wildcard rewrites (`/(.*)` &rarr; `/index.html`). |
+| 2 | **Dev Server Port 8080 Collision** | Independent regional sub-apps running locally claimed port `8080`, causing Vite port shifts and `/api/ping` 404s. | Pinned `server.port: 8081` in [vite.config.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/vite.config.ts#L10). |
+| 3 | **Vite File-Watcher Crashes (`ELIFECYCLE`)** | Edits inside regional subdirectories, Git operations (`.git/`), and production builds (`dist/`) triggered Vite reload crashes in headless background runs. | Configured `server.watch.ignored` in [vite.config.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/vite.config.ts#L11-L21) for `**/.git/**`, `**/dist/**`, `**/node_modules/**`, `**/North India/**`, `**/South India/**`, `**/East India/**`, `**/West India/**`, and `**/India_Heritage_and_Culture/**`, and ran daemon dev sessions with `CI=true`. |
+| 4 | **Multi-Account Git Credential Hang** | Windows Credential Manager held credentials for both `shresthasrii` and `tewarisudipti-git`, pausing `git push` on an interactive prompt when no user was specified in the URL. | Set the remote origin explicitly with the account prefix: `https://shresthasrii@github.com/shresthasrii/India_HNC_Main.git`. |
+| 5 | **GeoJSON Key Mismatches** | Highcharts features supply raw names or differing codes (`"in-ct"`, `"orissa"`, `"in-kr"`) compared to standard `STATE_INFO` keys. | Standardized multi-key entries in `stateInfo.ts` alongside lowercase `.includes()` substring checks inside `StateShape.tsx` and `StateInfoPanel.tsx`. |
+
+---
+
+## 9. DevOps, Build Pipelines, and Deployment
+
+### 9.1 Build Scripts and Local Development
+Defined in [package.json](file:///C:/Users/sriis/Documents/Final/INDIA_INC/package.json#L13-L22):
+- `pnpm dev`: Starts Vite dev server with integrated Express middleware on `http://localhost:8081/`.
+- `pnpm typecheck`: Runs TypeScript compilation verification (`tsc`).
+- `pnpm run build:client`: Builds optimized static SPA bundle to `dist/spa/`.
+- `pnpm run build:server`: Bundles Express production runner via [vite.config.server.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/vite.config.server.ts) to `dist/server/`.
+- `pnpm run build`: Runs both client and server builds sequentially.
+- `pnpm start`: Serves production build via `node dist/server/node-build.mjs`.
+- `pnpm test`: Executes `vitest --run`.
+
+### 9.2 Vercel Cloud Deployment Configuration
+- **GitHub Source**: Connected to `https://github.com/shresthasrii/India_HNC_Main.git` (`main` branch).
+- **Ignore Scoping**: `.gitignore` isolates `North India/`, `South India/`, `East India/`, `West India/`, `node_modules`, and `dist`, keeping `India_HNC_Main` strictly focused on the root portal.
+- **Netlify Fallback**: `netlify.toml` remains intact (`command = "npm run build:client"`, `publish = "dist/spa"`, `/api/*` redirect to Netlify functions).
+
+### 9.3 Developer Guide for Adding New States
+To wire any remaining state or Union Territory:
+1. Add normalized key records (`"in-xx"`, `"<name>"`, `"in-<name>"`) with `name`, `tourismUrl`, and 3 `notes` to `STATE_INFO` in [client/data/stateInfo.ts](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/data/stateInfo.ts).
+2. Add an `isXX` matcher and ternary URL branch before `tourismUrl` fallback in both [StateShape.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/map/StateShape.tsx) and [StateInfoPanel.tsx](file:///C:/Users/sriis/Documents/Final/INDIA_INC/client/components/map/StateInfoPanel.tsx).
+3. Sync the same keys into [India_Heritage_and_Culture/final/map-data.js](file:///C:/Users/sriis/Documents/Final/INDIA_INC/India_Heritage_and_Culture/final/map-data.js) and [part 3/map-data.js](file:///C:/Users/sriis/Documents/Final/INDIA_INC/India_Heritage_and_Culture/part%203/map-data.js).
+4. Validate with `pnpm typecheck` and `npm run build:client`, then commit and push to `origin/main`.
+
+---
+
+## 10. Verification and Operational Status
+
+| Verification Check | Command Executed | Observed Result |
+|---|---|---|
+| **TypeScript Typecheck** | `pnpm typecheck` | Exited with code `0` (zero errors) |
+| **Client Production Build** | `npm run build:client` | Compiled `1773` modules into `dist/spa/` in `3.37s` |
+| **Git Synchronization** | `git status` | `On branch main`, up to date with `origin/main` |
+| **Backend Health Endpoint** | `Invoke-RestMethod -Uri "http://localhost:8081/api/ping"` | `200 OK` (`message: ping pong`) |
+
+---
+
+## 11. Conclusion and Future Scope
+
+The **India Heritage and Culture Portal (`India_HNC_Main`)** establishes a cohesive, responsive gateway connecting national heritage visualizations directly to **18 deployed state portals** alongside regional references, historical milestones, and curated educational guides. With Vercel SPA routing, isolated port `8081` local serving, and streamlined Git synchronization in place, the codebase is cleanly structured for ongoing expansion.
+
+### Future Scope
+1. **Remaining Regional Coverage**: Onboard the remaining 10 Indian states and additional Union Territories as their dedicated deployments go live.
+2. **Dynamic Metadata Storage**: Externalize `STATE_INFO` and `TIMELINE_EVENTS` into a headless CMS or API-backed datastore served via Express endpoints.
+3. **Offline Vector Caching**: Fallback transparently to `public/in-all-disputed.geo.json` in `useGeoJSON` when external Highcharts CDN access is unavailable or offline.
